@@ -1,0 +1,15 @@
+{
+  "name": "gospot-ish",
+  "version": "1.0.0",
+  "description": "Connexion SSH simplifiée entre deux appareils iOS via iSH Shell.",
+  "main": "index.js",
+  "bin": {
+    "GoS": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["ish", "ssh", "ios", "shell"],
+  "author": "Mauricio",
+  "license": "ISC"
+}
