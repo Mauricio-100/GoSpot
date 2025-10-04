@@ -18,18 +18,24 @@ function setTheme(theme = 'default') {
     }
 }
 
-function runScript(scriptName, args = []) { /* ... collez la fonction runScript d'avant ... */ }
+function runScript(scriptName, args = []) {
+    const scriptPath = path.join(__dirname, '..', scriptName);
+    return new Promise((resolve, reject) => {
+        const process = spawn('sh', [scriptPath, ...args], { stdio: 'inherit' });
+        process.on('close', (code) => code === 0 ? resolve() : reject(new Error(`Script exited with code ${code}`)));
+        process.on('error', reject);
+    });
+}
 
-// MODIFIÉ : On ne réinitialise plus le thème ici pour éviter le crash
 function simpleExit() {
     process.exit(0);
 }
 
-// --- Logiques Serveur et Client (inchangées) ---
+// --- Logiques Serveur et Client ---
 async function startServer() { /* ... collez votre fonction startServer ici ... */ }
 async function startClient() { /* ... collez votre fonction startClient ici ... */ }
 
-// --- NOUVEAU : Menu principal complet et sécurisé ---
+// --- Menu principal complet et sécurisé ---
 function mainMenuLogic() {
     setTheme('hacker');
     console.log(boxen(chalk.bold('GoSpot : Menu Principal'), { padding: 1, borderColor: 'cyan' }));
@@ -38,12 +44,12 @@ function mainMenuLogic() {
 
     console.log('\n  1. Client (Rejoindre une connexion)');
     console.log('  2. Serveur (Partager la connexion)');
-    console.log(chalk.yellow('\n  3. Administration du Serveur (login)')); // NOUVELLE OPTION
+    console.log(chalk.yellow('\n  3. Administration du Serveur (login)'));
     console.log('\n  4. Quitter\n');
 
     rl.question(chalk.cyan('Votre choix (1-4) : '), async (choice) => {
         rl.close();
-
+        
         switch (choice.trim()) {
             case '1':
                 await startClient();
@@ -51,36 +57,41 @@ function mainMenuLogic() {
             case '2':
                 await startServer();
                 break;
-            case '3': // NOUVEAU
-                // Appelle directement la logique de login.sh
-                await runScript('login.sh').finally(() => simpleExit());
+            case '3':
+                // --- VOICI LA CORRECTION ---
+                // On utilise un bloc try...finally pour s'assurer que simpleExit() est toujours appelé
+                try {
+                    await runScript('login.sh');
+                } finally {
+                    simpleExit();
+                }
                 break;
             case '4':
                 simpleExit();
                 break;
             default:
-                // Gère les mauvaises saisies pour éviter le crash
                 console.log(chalk.red('\nChoix invalide. Veuillez réessayer.'));
-                // Rappelle le menu au lieu de crasher
                 setTimeout(mainMenuLogic, 1000); 
                 break;
         }
     });
 }
 
-// --- Point d'entrée principal (simplifié) ---
-// On lance toujours le menu principal. Les commandes directes sont un bonus.
+// --- Point d'entrée principal ---
 const command = process.argv[2];
 
 async function main() {
     if (command === 'login') {
-        await runScript('login.sh');
+        try {
+            await runScript('login.sh');
+        } finally {
+            simpleExit();
+        }
     } else if (command === 'serve') {
         await startServer();
     } else if (command === 'connect') {
         await startClient();
     } else {
-        // Le comportement par défaut est de TOUJOURS montrer le menu.
         mainMenuLogic();
     }
 }
