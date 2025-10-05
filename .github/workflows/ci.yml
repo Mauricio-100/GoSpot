@@ -3,8 +3,6 @@ name: GoSpot CI/CD - Test et Publication Automatique
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   test-and-publish:
@@ -16,22 +14,32 @@ jobs:
       packages: write
 
     steps:
-      - name: Checkout du code source
+      - name: 🧩 Récupération du code source
         uses: actions/checkout@v3
 
-      - name: Setup Node.js v20
+      - name: 🧱 Mise en place de Node.js v20
         uses: actions/setup-node@v3
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Installer les dépendances (y compris devDependencies)
-        run: npm install --legacy-peer-deps
+      - name: 🧹 Nettoyage ancien lockfile et modules
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install
 
-      - name: Lancer les tests
+      - name: 📦 Vérification du package-lock.json
+        run: |
+          if [ ! -f "package-lock.json" ]; then
+            echo "❌ Le fichier package-lock.json n’a pas été généré !"
+            exit 1
+          fi
+          echo "✅ package-lock.json prêt."
+
+      - name: 🧪 Lancement des tests
         run: npm test
 
-      - name: Publication automatique sur NPM et GitHub
+      - name: 🚀 Publication automatique sur NPM et GitHub
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
