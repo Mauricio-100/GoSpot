@@ -8,14 +8,14 @@
 \____\____|____/
 ```
 
-# GoSpot for iSH Shell
+# GoSpot Suite
 
-**Connexion SSH interactive et ultra-légère entre deux appareils iOS, sans jamais taper une adresse IP.**
+**La suite SSH tout-en-un pour iSH et environnements Linux. Zéro configuration IP, 100% en ligne de commande.**
 
 <p>
     <a href="https://github.com/Mauricio-100/GoSpot/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="Licence MIT"></a>
     <a href="https://www.npmjs.com/package/gospot-ish"><img src="https://img.shields.io/npm/v/gospot-ish.svg" alt="Version NPM"></a>
-    <img src="https://img.shields.io/badge/Made%20for-iSH%20Shell-black?logo=apple" alt="Fait pour iSH">
+    <img src="https://img.shields.io/badge/Made%20for-Linux%20&%20iSH-black?logo=linux&logoColor=white" alt="Fait pour Linux & iSH">
     <img src="https://img.shields.io/github/last-commit/Mauricio-100/GoSpot" alt="Dernier Commit">
 </p>
 
@@ -23,66 +23,68 @@
 
 ---
 
-GoSpot est un outil en ligne de commande qui élimine la complexité des connexions SSH entre deux appareils mobiles. Fini la recherche d'adresses IP locales ! GoSpot utilise le Partage de connexion de votre iPhone pour créer un réseau privé instantané et gère la connexion pour vous via un menu interactif.
+GoSpot transforme la complexité des connexions SSH entre appareils mobiles en une expérience simple et élégante. Fini la chasse aux adresses IP locales ! GoSpot utilise le Partage de connexion de votre appareil pour créer un réseau privé instantané et orchestre la connexion via une interface interactive et immersive.
+
+## 🏛️ Philosophie du Projet
+
+GoSpot a été conçu avec trois principes fondamentaux :
+
+1.  **💻 Pureté de la Ligne de Commande :** Tout doit pouvoir se faire depuis le terminal.
+2.  **🪶 Légèreté Maximale :** Le moins de dépendances externes possible pour garantir la rapidité et la robustesse.
+3.  **🧠 Intelligence Intégrée :** L'application doit être consciente de son environnement (détection d'OS, redondance des commandes) pour s'adapter à l'utilisateur, et non l'inverse.
 
 ## ✨ Fonctionnalités Clés
 
--   **Zéro Configuration IP :** Détection automatique du serveur sur le réseau.
--   **Interface Interactive :** Un menu simple pour choisir entre le mode Client ou Serveur.
--   **Thème "Hacker" :** Change l'apparence du terminal pour une expérience immersive.
--   **Ultra-Léger :** Construit sans dépendances UI externes pour une performance maximale.
--   **Administration Facile :** Un panneau de contrôle intégré (`GoS login`) pour gérer le mot de passe et les clés du serveur.
+-   **🌐 Détection d'IP Dynamique et Redondante :** Tente plusieurs méthodes (`ifconfig`, `ip a`, `ping`) pour trouver le serveur de manière fiable.
+-   **🖥️ Interface "Hacker" Immersive :** Change le thème du terminal pour une expérience utilisateur unique.
+-   **⚙️ Architecture Modulaire 100% JavaScript :** Un code propre et maintenable, où chaque fichier a un rôle unique.
+-   **🛰️ Conscience de la Plateforme :** Détecte la distribution Linux (iSH, Ubuntu, Kali...) et prépare le terrain pour une compatibilité future avec d'autres OS.
+-   **🧰 SDK d'Outils Intégré :** Installe une suite complète d'outils réseau (`nmap`, `curl`, `ifconfig`...) en une seule commande.
+-   **🔑 Gestionnaire SSH et DB :** Inclut des outils pour créer des clés SSH et se connecter à des bases de données distantes.
 
-## 🛠️ Outils Linux Requis
+## 🚀 Installation & Utilisation
 
-GoSpot agit comme un chef d'orchestre pour des outils Linux standards. Pour fonctionner, il a besoin de :
--   `openssh` (pour `ssh`, `sshd`, etc.)
--   `iproute2` (pour `ping`)
+L'installation se fait via `npm`. GoSpot est conçu pour être aussi simple à installer qu'à utiliser.
 
-**Bonne nouvelle :** GoSpot vous aide à les installer ! La première fois que vous configurez le serveur, l'outil vous guidera.
+### 1. Prérequis
 
-## 🚀 Installation
-
-L'installation se fait via `npm` (le gestionnaire de paquets de Node.js).
-
-1.  **Prérequis :** Assurez-vous d'avoir `nodejs` et `npm` installés dans iSH :
-    ```sh
-    apk add nodejs npm
-    ```
-
-2.  **Installation de GoSpot :**
-    Installez le package globalement avec cette commande unique :
-    ```sh
-    npm install -g gospot-ish
-    ```
-
-## 💡 Utilisation
-
-### 1. Configuration du Serveur (Une seule fois)
-
-Sur l'appareil qui **recevra** les connexions :
-
+Assurez-vous d'avoir `nodejs` et `npm` installés. Sur iSH ou une distribution Alpine :
 ```sh
-# Lance le panneau d'administration
-GoS login
+apk add nodejs npm git
 ```
-Dans le menu, choisissez l'option **1** pour définir un **mot de passe root**. Ce mot de passe sera demandé une seule fois par chaque nouveau client pour autoriser sa connexion.
 
-### 2. Lancer une Connexion
+### 2. Installation de GoSpot
 
-Lancez simplement la commande `GoS` sur les deux appareils.
+Installez le package globalement avec cette commande unique :
+```sh
+npm install -g gospot-ish
+```
+
+### 3. Utilisation
+
+Une fois installé, lancez simplement la commande `GoS` sur les deux appareils pour afficher le menu principal.
 
 ```sh
 GoS
 ```
 
+#### Premier Lancement (Configuration du Serveur)
+Sur l'appareil qui **recevra** les connexions, lancez `GoS` et choisissez :
+1.  **Option 3 : Installer les outils du SDK**.
+2.  **Option 5 : Administration du Serveur**, puis définissez un mot de passe `root`.
+
+#### Lancer une Connexion
 -   **Sur l'appareil Serveur :**
-    1.  Activez le **Partage de connexion** dans les Réglages de l'iPhone.
-    2.  Dans le menu GoS, choisissez **"Serveur"**. L'application se mettra en attente.
+    1.  Activez le **Partage de connexion** (Hotspot).
+    2.  Dans le menu GoS, choisissez **"Serveur"**.
 
 -   **Sur l'appareil Client :**
     1.  Connectez-vous au réseau Wi-Fi créé par le serveur.
-    2.  Dans le menu GoS, choisissez **"Client"**. L'application trouvera le serveur et lancera la connexion.
+    2.  Dans le menu GoS, choisissez **"Client"**.
+
+## 🤝 Contribution
+
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une *issue* pour signaler un bug ou proposer une nouvelle fonctionnalité.
 
 ## ⚖️ Licence
 
