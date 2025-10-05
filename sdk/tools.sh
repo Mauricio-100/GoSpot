@@ -1,18 +1,22 @@
-const { spawn } = require('child_process');
-const chalk = require('chalk');
+#!/bin/sh
 
-async function installTools() {
-    console.log(chalk.blue('Mise à jour de la liste des paquets...'));
-    
-    const apkUpdate = spawn('apk', ['update'], { stdio: 'inherit' });
-    await new Promise(resolve => apkUpdate.on('close', resolve));
-    
-    console.log(chalk.blue('\nInstallation des outils requis (SSH, Réseau, MySQL)...'));
-    
-    const apkAdd = spawn('apk', ['add', 'openssh', 'iproute2', 'mariadb-client'], { stdio: 'inherit' });
-    await new Promise(resolve => apkAdd.on('close', resolve));
+# GoS SDK Installer v1.2
+# Installe une suite complète d'outils d'administration réseau.
 
-    console.log(chalk.green('\n✅ Tous les outils du SDK GoS sont installés !'));
-}
+# Fonctions pour des messages clairs
+GREEN() { printf "\033[1;32m%s\033[0m\n" "$1"; }
+YELLOW() { printf "\033[1;33m%s\033[0m\n" "$1"; }
+INFO() { printf "%s\n" "$1"; }
 
-module.exports = { installTools };
+INFO "Mise à jour de la liste des paquets Alpine..."
+apk update
+
+YELLOW "\n--- Installation de la Suite d'Outils GoS ---"
+INFO "Installation de : openssh, iproute2, net-tools (ifconfig), nmap, curl, mariadb-client..."
+
+# On installe tous les paquets en une seule commande pour plus d'efficacité
+apk add openssh iproute2 net-tools nmap curl mariadb-client
+
+GREEN "\n✅ La suite d'outils du SDK GoS a été installée avec succès !"
+# Petite pause pour que l'utilisateur puisse lire le message final avant le retour au menu
+sleep 2
