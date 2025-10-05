@@ -1,5 +1,5 @@
 {
-  "name": "gospot-ish",
+  "name": "gos/ish",
   "version": "1.0.0",
   "description": "La suite SSH tout-en-un pour iSH et Linux, avec CI et tests automatisés.",
   "main": "index.js",
