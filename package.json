@@ -1,8 +1,11 @@
 {
   "name": "gospot-ish",
-  "version": "2.3.0", 
-  "description": "L'outil SSH tout-en-un pour iSH Shell, sans dépendances UI externes.",
-  "bin": { "GoS": "./index.js" },
+  "version": "3.1.0",
+  "description": "L'outil SSH tout-en-un pour iSH Shell.",
+  "main": "index.js",
+  "bin": {
+    "GoS": "./index.js"
+  },
   "dependencies": {
     "boxen": "^5.1.2",
     "chalk": "^4.1.2",
