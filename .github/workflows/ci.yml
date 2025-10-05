@@ -7,7 +7,6 @@ on:
 jobs:
   test-and-publish:
     runs-on: ubuntu-latest
-    # On donne les permissions au job pour qu'il puisse pousser des commits/tags
     permissions:
       contents: write
       issues: write
@@ -18,23 +17,20 @@ jobs:
       - name: Récupération du code source
         uses: actions/checkout@v3
 
-      - name: Mise en place de Node.js v16
+      - name: Mise en place de Node.js v20
         uses: actions/setup-node@v3
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Installation des dépendances NPM
-        run: npm ci # 'ci' est plus rapide et plus sûr pour l'automatisation
+      - name: Installation des dépendances (y compris devDependencies)
+        run: npm ci
 
       - name: Lancement des tests de base
-        run: npm test # On suppose que vous avez un script de test
+        run: npm test
 
       - name: Publication automatique sur NPM et GitHub
-        # Cette étape ne s'exécute que si les tests réussissent
-        run: npx semantic-release
+        run: npx semantic-release # On garde npx car c'est la méthode recommandée et la plus robuste
         env:
-          # Le token pour pousser sur GitHub (automatiquement fourni par Actions)
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          # Le token pour publier sur NPM (celui que vous avez ajouté aux secrets)
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
