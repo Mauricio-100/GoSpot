@@ -8,142 +8,111 @@ const boxen = require('boxen');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
-// =================================================================
-// Fonctions Utilitaires et Thème
-// =================================================================
-
-function setTheme(theme = 'default') {
-    if (theme === 'hacker') {
-        process.stdout.write('\x1Bc' + chalk.bgHex('#0D0208').open + chalk.hex('#00FF41').open);
-    } else {
-        process.stdout.write('\x1Bc');
-    }
-}
-
+// --- Fonctions Utilitaires et Thème ---
+function setTheme(theme = 'default') { /* ... collez votre fonction setTheme ... */ }
 function runScript(scriptName, args = []) {
-    const scriptPath = path.join(__dirname, 'import', scriptName);
-    return new Promise((resolve, reject) => {
-        const process = spawn('sh', [scriptPath, ...args], { stdio: 'inherit' });
-        process.on('close', (code) => code === 0 ? resolve() : reject(new Error(`Le script s'est terminé avec le code ${code}`)));
-        process.on('error', reject);
-    });
+    const scriptPath = path.join(__dirname, 'sdk', scriptName); // Chemin mis à jour vers sdk/
+    return new Promise((resolve, reject) => { /* ... collez le reste de la fonction ... */ });
 }
+function simpleExit() { /* ... collez votre fonction simpleExit ... */ }
 
-function simpleExit() {
-    process.exit(0);
-}
+// --- Logiques Métier (Serveur et Client) ---
+async function startServer() { /* ... collez votre fonction startServer ... */ }
+async function startClient() { /* ... collez votre fonction startClient ... */ }
 
-// =================================================================
-// Logiques Métier (Serveur et Client)
-// =================================================================
+// --- NOUVELLES FONCTIONS MÉTIER ---
 
-async function startServer() {
+async function createSshKey() {
     setTheme('hacker');
-    console.log(boxen(chalk.bold('Mode Serveur GoS'), { padding: 1, borderColor: 'green' }));
-    console.log(chalk.yellow("ACTION : Assurez-vous que le 'Partage de connexion' est bien activé.\n"));
-
-    console.log(chalk.blue('Démarrage et vérification du service SSH...'));
-    await exec(`sh ${path.join(__dirname, 'import', 'GoS.sh')} serve`);
-    console.log(chalk.green('Serveur SSH actif.'));
-    
-    console.log(chalk.cyan(`\n  IP du serveur : 172.20.10.1`));
-    console.log(chalk.cyan(`  Port SSH      : 22`));
-    
-    console.log(chalk.cyan('\nEn attente de connexions. Appuyez sur Ctrl+C pour quitter.'));
-}
-
-async function startClient() {
-    setTheme('hacker');
-    console.log(boxen(chalk.bold('Mode Client GoS'), { padding: 1, borderColor: 'cyan' }));
-    console.log(chalk.yellow("ACTION : Assurez-vous d'être connecté au Wi-Fi du serveur.\n"));
-    
-    console.log(chalk.blue('Recherche du serveur sur le réseau...'));
-    
+    console.log(boxen(chalk.bold('Générateur de Clé SSH'), { padding: 1, borderColor: 'yellow' }));
+    console.log('Cet outil va créer une nouvelle paire de clés SSH (publique et privée).\n');
     try {
-        const { stdout } = await exec(`sh ${path.join(__dirname, 'import', 'GoS.sh')} connect`);
-        const serverIp = stdout.trim();
+        // On lance ssh-keygen en mode interactif pour que l'utilisateur puisse choisir le nom et le mot de passe
+        await spawn('ssh-keygen', ['-t', 'ed25519'], { stdio: 'inherit' });
+        console.log(chalk.green('\n✅ Clé SSH créée avec succès !'));
+    } catch (e) {
+        console.log(chalk.red('\nLa création de la clé a échoué.'));
+    }
+    await new Promise(r => setTimeout(r, 2000)); // Pause avant de revenir au menu
+}
 
-        if (serverIp.includes('ERROR')) {
-            console.log(chalk.red('Serveur introuvable.'));
+async function connectToDatabase() {
+    setTheme('hacker');
+    console.log(boxen(chalk.bold('Client Base de Données'), { padding: 1, borderColor: 'magenta' }));
+    
+    // ⚠️ SÉCURITÉ : On ne stocke jamais les identifiants ! On les demande.
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    rl.question(chalk.yellow('Collez votre chaîne de connexion MySQL et appuyez sur Entrée :\n'), async (connectionString) => {
+        rl.close();
+        if (!connectionString) {
+            console.log(chalk.red('Aucune chaîne de connexion fournie.'));
             simpleExit();
             return;
         }
-        
-        console.log(chalk.green(`Serveur trouvé ! Adresse : ${serverIp}`));
-        console.log(chalk.blue('\nNOTE : La première fois, le mot de passe "root" du serveur sera demandé.'));
-
-        await spawn('ssh', [`root@${serverIp}`], { stdio: 'inherit' });
-        
-    } catch (error) {
-        console.log(chalk.red('La connexion a échoué.'));
-    }
-    simpleExit();
+        try {
+            console.log(chalk.blue('\nTentative de connexion...'));
+            // On utilise la commande 'mysql' avec la chaîne de connexion
+            await spawn('mysql', [connectionString], { stdio: 'inherit' });
+        } catch (e) {
+            console.log(chalk.red('\nImpossible de se connecter. Assurez-vous que le client MySQL est installé (`GoS install`) et que la chaîne est correcte.'));
+        }
+        simpleExit();
+    });
 }
 
 
-// =================================================================
-// Menu Principal et Point d'Entrée
-// =================================================================
+// --- Menu Principal Final ---
 
-function mainMenuLogic() {
+async function mainMenuLogic() {
     setTheme('hacker');
-    console.log(boxen(chalk.bold('GoSpot : Menu Principal'), { padding: 1, borderColor: 'cyan' }));
+    console.log(boxen(chalk.bold('GoSpot Suite v4.0'), { padding: 1, borderColor: 'cyan' }));
     
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
-    console.log('\n  1. Client (Rejoindre une connexion)');
-    console.log('  2. Serveur (Partager la connexion)');
-    console.log(chalk.yellow('\n  3. Administration du Serveur (login)'));
-    console.log('\n  4. Quitter\n');
+    console.log(chalk.cyan('\n--- Connexion ---'));
+    console.log('  1. Client (Rejoindre)');
+    console.log('  2. Serveur (Partager)');
 
-    rl.question(chalk.cyan('Votre choix (1-4) : '), async (choice) => {
+    console.log(chalk.yellow('\n--- Outils & SDK ---'));
+    console.log('  3. Installer les outils du SDK');
+    console.log('  4. Créer une nouvelle clé SSH');
+    console.log('  5. Administration du Serveur (login)');
+
+    console.log(chalk.magenta('\n--- Base de Données ---'));
+    console.log('  6. Se connecter à la base de données');
+
+    console.log('\n  7. Quitter\n');
+
+    rl.question(chalk.cyan('Votre choix (1-7) : '), async (choice) => {
         rl.close();
         
         switch (choice.trim()) {
-            case '1':
-                await startClient();
-                break;
-            case '2':
-                await startServer();
-                break;
-            case '3':
-                try {
-                    await runScript('login.sh');
-                } finally {
-                    simpleExit();
-                }
-                break;
-            case '4':
-                simpleExit();
-                break;
-            default:
-                console.log(chalk.red('\nChoix invalide. Veuillez réessayer.'));
-                setTimeout(mainMenuLogic, 1000); 
-                break;
+            case '1': await startClient(); break;
+            case '2': await startServer(); break;
+            case '3': await runScript('tools.sh'); break;
+            case '4': await createSshKey(); break;
+            case '5': await runScript('login.sh'); break;
+            case '6': await connectToDatabase(); break;
+            default: simpleExit(); break;
+        }
+        // Après chaque action (sauf la connexion DB qui quitte), on revient au menu
+        if (!['6', '7'].includes(choice.trim())) {
+            setTimeout(mainMenuLogic, 1000);
         }
     });
 }
 
-const command = process.argv[2];
-
+// --- Point d'entrée ---
 async function main() {
-    if (command === 'login') {
-        try {
-            await runScript('login.sh');
-        } finally {
-            simpleExit();
-        }
-    } else if (command === 'serve') {
-        await startServer();
-    } else if (command === 'connect') {
-        await startClient();
-    } else {
-        mainMenuLogic();
-    }
+    // Les commandes directes sont toujours possibles
+    const command = process.argv[2];
+    if (command === 'login') { await runScript('login.sh'); }
+    else if (command === 'serve') { await startServer(); }
+    else if (command === 'connect') { await startClient(); }
+    else { mainMenuLogic(); } // Comportement par défaut : le menu
 }
 
 process.on('SIGINT', simpleExit);
-
 main().catch(err => {
     console.error(chalk.red('Une erreur critique est survenue:'), err);
     simpleExit();
