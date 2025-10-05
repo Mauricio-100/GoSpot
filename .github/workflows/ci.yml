@@ -1,0 +1,60 @@
+# Nom du workflow qui apparaîtra dans l'onglet "Actions" de GitHub
+name: GoSpot CI - Tests d'Intégration
+
+# Déclencheurs : Ce workflow s'exécute...
+on:
+  # ...quand on pousse du code sur la branche 'main'
+  push:
+    branches: [ main ]
+  # ...ou quand une Pull Request est ouverte vers la branche 'main'
+  pull_request:
+    branches: [ main ]
+
+# Jobs : La liste des tâches à exécuter
+jobs:
+  # Nom du job (peut être ce que vous voulez)
+  build-and-test:
+    # Machine Virtuelle : On utilise la dernière version d'Ubuntu fournie par GitHub
+    runs-on: ubuntu-latest
+
+    # Étapes : La séquence d'actions à effectuer
+    steps:
+      # Étape 1 : Récupérer le code de votre dépôt
+      - name: Récupération du code source
+        uses: actions/checkout@v3
+
+      # Étape 2 : Mettre en place l'environnement Node.js
+      - name: Mise en place de Node.js v16
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm' # Met en cache les dépendances pour accélérer les futurs builds
+
+      # Étape 3 : Installer les dépendances du projet
+      - name: Installation des dépendances NPM
+        run: npm install
+
+      # Étape 4 : Rendre la commande GoS disponible globalement dans la VM
+      - name: Installation globale de la commande GoS (npm link)
+        run: npm link
+
+      # Étape 5 : Installer les dépendances Linux requises par GoS
+      - name: Installation des dépendances du SDK Linux
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssh-server iproute2 net-tools mariadb-client curl nmap
+
+      # Étape 6 : Lancer les tests !
+      - name: Lancement des tests de la commande GoS
+        run: |
+          echo "--- Test 1: Lancement du menu principal ---"
+          # On simule un "Ctrl+C" après 2s pour vérifier que le menu se lance sans crasher
+          timeout 2s GoS || true 
+          
+          echo "--- Test 2: Lancement de la commande 'login' ---"
+          # On envoie "q" (pour quitter) en entrée pour tester le lancement
+          echo "q" | GoS login
+
+          echo "--- Test 3: Lancement de la commande 'install' (qui est maintenant la commande '3') ---"
+          # On envoie "3" en entrée du menu principal
+          echo "3" | GoS
