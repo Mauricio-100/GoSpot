@@ -1,16 +1,15 @@
 {
   "name": "gospot-ish",
-  "version": "3.1.0",
-  "description": "L'outil SSH tout-en-un pour iSH Shell.",
+  "version": "3.2.0",
+  "description": "L'outil SSH tout-en-un pour iSH Shell, sans aucune dépendance UI externe.",
   "main": "index.js",
   "bin": {
     "GoS": "./index.js"
   },
   "dependencies": {
     "boxen": "^5.1.2",
-    "chalk": "^4.1.2",
-    "ora": "^5.4.1"
+    "chalk": "^4.1.2"
   },
   "author": "Mauricio",
-  "license": "MIT"
+  "license": "ISC"
 }
