@@ -57,7 +57,7 @@ apk add nodejs npm git
 
 Installez le package globalement avec cette commande unique :
 ```sh
-npm install -g gospot-ish
+npm install -g gos/ish
 ```
 
 ### 3. Utilisation
