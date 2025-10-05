@@ -1,39 +1,69 @@
-const { spawn } = require('child_process');
+#!/usr/bin/env node
+
+const readline = require('readline');
 const chalk = require('chalk');
 const boxen = require('boxen');
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
-const { simpleExit } = require('./utils.js'); // On va créer ce fichier utilitaire
+const os = require('os');
 
-async function startClient() {
-    console.log(boxen(chalk.bold('Mode Client GoS'), { padding: 1, borderColor: 'cyan' }));
-    console.log(chalk.yellow("ACTION : Assurez-vous d'être connecté au Wi-Fi du serveur.\n"));
-    
-    console.log(chalk.blue('Recherche du serveur sur le réseau...'));
-    
-    try {
-        const { stdout } = await exec("ping -c 1 -W 2 172.20.10.1 > /dev/null 2>&1 && echo '172.20.10.1'");
-        const serverIp = stdout.trim();
+// === IMPORTATIONS DEPUIS VOS FICHIERS ===
+const { startClient } = require('./client.js');
+const { startServer } = require('./partage.js');
+const { setTheme, runScript, simpleExit } = require('./utils.js');
 
-        if (!serverIp) {
-            console.log(chalk.red('Serveur introuvable.'));
-            simpleExit();
-            return;
-        }
-        
-        console.log(chalk.green(`Serveur trouvé ! Adresse : ${serverIp}`));
-        console.log(chalk.blue('\nNOTE : La première fois, le mot de passe "root" du serveur sera demandé.'));
-
-        await new Promise((resolve, reject) => {
-            const sshProcess = spawn('ssh', [`root@${serverIp}`], { stdio: 'inherit' });
-            sshProcess.on('close', resolve);
-            sshProcess.on('error', reject);
-        });
-        
-    } catch (error) {
-        console.log(chalk.red('La connexion a échoué.'));
-    }
-    simpleExit();
+// --- Vérification de Compatibilité ---
+function checkCompatibility() {
+    // ... (collez la fonction checkCompatibility ici) ...
 }
 
-module.exports = { startClient };
+// --- Menu Principal ---
+async function mainMenuLogic() {
+    setTheme('hacker');
+    const title = `GoSpot Suite v5.3 sur ${os.platform()} (${os.arch()})`;
+    console.log(boxen(chalk.bold(title), { padding: 1, borderColor: 'cyan' }));
+    
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+
+    console.log(chalk.cyan('\n--- Connexion ---'));
+    console.log('  1. Client (Rejoindre)');
+    console.log('  2. Serveur (Partager)');
+    console.log(chalk.yellow('\n--- Outils & SDK (via scripts) ---'));
+    console.log('  3. Installer les outils');
+    console.log('  4. Créer une clé SSH');
+    console.log('  5. Administration du Serveur');
+    console.log('\n  6. Quitter\n');
+
+    rl.question(chalk.cyan('Votre choix (1-6) : '), async (choice) => {
+        rl.close();
+        let shouldReturnToMenu = false;
+
+        switch (choice.trim()) {
+            case '1': await startClient(); break;
+            case '2': await startServer(); break;
+            case '3': await runScript('tools.sh'); shouldReturnToMenu = true; break;
+            case '4': await runScript('ssh_tool.sh'); shouldReturnToMenu = true; break; // On peut créer ce script pour ssh-keygen
+            case '5': await runScript('login.sh'); shouldReturnToMenu = true; break;
+            case '6': simpleExit(); break;
+            default: console.log(chalk.red('\nChoix invalide.')); shouldReturnToMenu = true; break;
+        }
+
+        if (shouldReturnToMenu) {
+            setTimeout(mainMenuLogic, 1500);
+        }
+    });
+}
+
+// --- Point d'Entrée ---
+async function main() {
+    checkCompatibility();
+    const command = process.argv[2];
+    if (command === 'login') { await runScript('login.sh'); mainMenuLogic(); }
+    else if (command === 'serve') { await startServer(); }
+    else if (command === 'connect') { await startClient(); }
+    else { mainMenuLogic(); }
+}
+
+process.on('SIGINT', simpleExit);
+main().catch(err => {
+    console.error(chalk.red('Une erreur critique est survenue:'), err);
+    simpleExit();
+});
