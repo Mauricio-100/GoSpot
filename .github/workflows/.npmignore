@@ -1,0 +1,18 @@
+# Fichiers de configuration locaux
+.devcontainer/
+.github/
+.vscode/
+*.log
+
+# Tests et scripts
+tests/
+*.spec.js
+*.test.js
+
+# Node modules et lockfile locaux
+node_modules/
+package-lock.json
+
+# Divers
+.DS_Store
+.env
