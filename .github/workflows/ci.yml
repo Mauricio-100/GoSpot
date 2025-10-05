@@ -35,6 +35,6 @@ jobs:
         run: npx semantic-release
         env:
           # Le token pour pousser sur GitHub (automatiquement fourni par Actions)
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           # Le token pour publier sur NPM (celui que vous avez ajouté aux secrets)
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
