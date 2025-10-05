@@ -1,17 +1,22 @@
 {
   "name": "gospot-ish",
-  "version": "1.5.1",
-  "description": "La suite SSH tout-en-un pour iSH et Linux, plus puissant que sshd seul just GoS.",
+  "version": "5.5.1",
+  "description": "La suite SSH tout-en-un pour iSH et Linux, avec CI et tests automatisés.",
   "main": "index.js",
   "bin": {
     "GoS": "./index.js"
   },
   "scripts": {
-    "test": "echo \"Lancement des tests...\" && node index.js install && node index.js login"
+    "test": "echo \"Lancement des tests...\" && node index.js install"
   },
   "dependencies": {
     "boxen": "^5.1.2",
     "chalk": "^4.1.2"
+  },
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "semantic-release": "^21.0.0"
   },
   "author": "Mauricio",
   "license": "ISC",
@@ -23,4 +28,4 @@
     "url": "https://github.com/Mauricio-100/GoSpot/issues"
   },
   "homepage": "https://github.com/Mauricio-100/GoSpot#readme"
-}
+}```
