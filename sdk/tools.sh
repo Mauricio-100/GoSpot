@@ -1,21 +1,18 @@
-#!/bin/sh
+const { spawn } = require('child_process');
+const chalk = require('chalk');
 
-# GoS SDK Installer
-# Cet outil installe toutes les dépendances Linux requises.
+async function installTools() {
+    console.log(chalk.blue('Mise à jour de la liste des paquets...'));
+    
+    const apkUpdate = spawn('apk', ['update'], { stdio: 'inherit' });
+    await new Promise(resolve => apkUpdate.on('close', resolve));
+    
+    console.log(chalk.blue('\nInstallation des outils requis (SSH, Réseau, MySQL)...'));
+    
+    const apkAdd = spawn('apk', ['add', 'openssh', 'iproute2', 'mariadb-client'], { stdio: 'inherit' });
+    await new Promise(resolve => apkAdd.on('close', resolve));
 
-# Couleurs
-GREEN() { printf "\033[1;32m%s\033[0m\n" "$1"; }
-INFO() { printf "%s\n" "$1"; }
+    console.log(chalk.green('\n✅ Tous les outils du SDK GoS sont installés !'));
+}
 
-INFO "Mise à jour de la liste des paquets..."
-apk update
-
-INFO "\nInstallation des outils réseau et SSH..."
-apk add openssh iproute2
-
-INFO "\nInstallation du client MySQL/MariaDB..."
-# iSH utilise le client mariadb, qui est compatible mysql
-apk add mariadb-client
-
-GREEN "\n✅ Tous les outils du SDK GoS sont installés !"
-sleep 2
+module.exports = { installTools };
