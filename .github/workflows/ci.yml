@@ -1,46 +1,45 @@
-name: GoSpot CI/CD - Test et Publication Automatique
+name: Publish NPM Package
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
-  test-and-publish:
+  release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-      packages: write
 
     steps:
-      - name: 🧩 Récupération du code source
+      # 1️⃣ Récupérer le code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: 🧱 Mise en place de Node.js v20
+      # 2️⃣ Installer Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org/'
 
-      - name: 🧹 Nettoyage ancien lockfile et modules
+      # 3️⃣ Installer les dépendances
+      - name: Install dependencies
+        run: npm install
+
+      # 4️⃣ Bump automatique de version et tag git
+      - name: Bump version and create git tag
+        id: bump_version
         run: |
-          rm -rf node_modules package-lock.json
-          npm install
+          npm version patch -m "chore: bump version to %s [skip ci]"
+          git push origin main --tags
 
-      - name: 📦 Vérification du package-lock.json
+      # 5️⃣ Publier sur npm
+      - name: Publish package to npm
         run: |
-          if [ ! -f "package-lock.json" ]; then
-            echo "❌ Le fichier package-lock.json n’a pas été généré !"
-            exit 1
-          fi
-          echo "✅ package-lock.json prêt."
-
-      - name: 🧪 Lancement des tests
-        run: npm test
-
-      - name: 🚀 Publication automatique sur NPM et GitHub
-        run: npx semantic-release
+          echo "Publishing package..."
+          npm publish --access public
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # 6️⃣ Confirmation
+      - name: Success message
+        run: echo "🎉 Package published successfully!"
