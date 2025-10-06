@@ -10,7 +10,10 @@ WORKDIR /gospot
 # Copier tous les fichiers du projet
 COPY . .
 
-# Installer GoSpot globalement
+# Installer d'abord toutes les dépendances du projet
+RUN npm install
+
+# Puis installer le CLI globalement (facultatif)
 RUN npm install -g .
 
 # Définir le point d'entrée
