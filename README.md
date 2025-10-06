@@ -14,7 +14,7 @@
 
 <p>
     <a href="https://github.com/Mauricio-100/GoSpot/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="Licence MIT"></a>
-    <a href="https://www.npmjs.com/package/gospot-ish"><img src="https://img.shields.io/npm/v/gospot-ish.svg" alt="Version NPM"></a>
+    <a href="https://www.npmjs.com/package/gospot-ish"><img src="https://img.shields.io/npm/v/@gosish/ish.svg" alt="Version NPM"></a>
     <img src="https://img.shields.io/badge/Made%20for-Linux%20&%20iSH-black?logo=linux&logoColor=white" alt="Fait pour Linux & iSH">
     <img src="https://img.shields.io/github/last-commit/Mauricio-100/GoSpot" alt="Dernier Commit">
 </p>
@@ -57,7 +57,7 @@ apk add nodejs npm git
 
 Installez le package globalement avec cette commande unique :
 ```sh
-npm install -g gos/ish
+npm install -g @gosish/ish
 ```
 
 ### 3. Utilisation
