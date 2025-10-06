@@ -19,7 +19,7 @@
     "semantic-release": "^21.0.0"
   },
   "author": "Mauricio",
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Mauricio-100/GoSpot.git"
@@ -27,8 +27,8 @@
   "bugs": {
     "url": "https://github.com/Mauricio-100/GoSpot/issues"
   },
-  "homepage": "https://github.com/Mauricio-100/GoSpot#readme"
-}
-"engine": {
-  "node": "16"
+  "homepage": "https://github.com/Mauricio-100/GoSpot#readme",
+  "engines": {
+    "node": ">=18"
+  }
 }
