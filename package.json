@@ -1,6 +1,6 @@
 {
   "name": "@gos/ish",
-  "version": "1.0.0",
+  "version": "1.2.1",
   "description": "La suite SSH tout-en-un pour iSH et Linux, avec CI et tests automatisés.",
   "main": "index.js",
   "bin": {
