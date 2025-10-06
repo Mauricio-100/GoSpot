@@ -1,0 +1,19 @@
+# Maintainer: Mauricio <ceoseshell@gmail.com>
+pkgname=gosish
+pkgver=1.0.3
+pkgrel=0
+pkgdesc="Suite SSH tout-en-un pour iSH et Linux - GoSpot CLI"
+url="https://github.com/Mauricio-100/GoSpot"
+arch="noarch"
+license="MIT"
+depends="nodejs npm"
+source="https://registry.npmjs.org/@gosish/ish/-/ish-$pkgver.tgz"
+builddir="$srcdir"
+
+build() {
+    echo "Aucune compilation requise"
+}
+
+package() {
+    npm install -g --prefix "$pkgdir/usr" @gosish/ish@$pkgver
+}
