@@ -10,6 +10,9 @@ WORKDIR /gospot
 # Copier tous les fichiers du projet
 COPY . .
 
+# on netoie d'abord le cache
+RUN npm cache clean --force
+
 # Installer d'abord toutes les dépendances du projet
 RUN npm install
 
