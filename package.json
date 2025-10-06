@@ -29,3 +29,6 @@
   },
   "homepage": "https://github.com/Mauricio-100/GoSpot#readme"
 }
+"engine": {
+  "node": "16"
+}
