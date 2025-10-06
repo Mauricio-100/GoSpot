@@ -1,6 +1,10 @@
 <div align="center">
 
-<img width="1024" height="1024" alt="GoSpot sh app" src="https://github.com/user-attachments/assets/8b206306-b9f4-4d13-b1cc-b4fdebda7584" />
+
+
+<!-- bannière horizontale -->
+![GoSpot HotPost](assets/gospot-horizontal.svg)
+
 
 
 
